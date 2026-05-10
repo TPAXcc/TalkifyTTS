@@ -19,6 +19,7 @@ import com.github.lonepheasantwarrior.talkify.service.engine.SynthesisParams
 import com.github.lonepheasantwarrior.talkify.service.engine.TtsEngineApi
 import com.github.lonepheasantwarrior.talkify.service.engine.TtsEngineFactory
 import com.github.lonepheasantwarrior.talkify.service.engine.TtsSynthesisListener
+import com.github.lonepheasantwarrior.talkify.util.PcmTimeStretcher
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
@@ -619,6 +620,15 @@ class TalkifyTtsService : TextToSpeechService() {
             var audioInitialized = false
             var synthesisErrorMessage: String? = null
 
+            // 为不支持原生语速的引擎创建 PCM 时间拉伸器
+            val speedRatio = params.speechRate / 100f
+            val timeStretcher = if (!engine.supportsNativeSpeechRate() && speedRatio != 1.0f) {
+                TtsLogger.d("Engine does not support native speech rate, using PCM time stretcher: ${speedRatio}x")
+                PcmTimeStretcher(speedRatio)
+            } else {
+                null
+            }
+
             // 5. 执行合成 (使用协程挂起)
             val result = withTimeoutOrNull(120_000L) {
                 suspendCancellableCoroutine { continuation ->
@@ -640,12 +650,18 @@ class TalkifyTtsService : TextToSpeechService() {
                                 audioInitialized = true
                                 callback.start(sampleRate, audioFormat, channelCount)
                             }
-                            
+
+                            val processedData = if (timeStretcher != null) {
+                                timeStretcher.process(audioData)
+                            } else {
+                                audioData
+                            }
+
                             val maxChunkSize = 4096
                             var offset = 0
-                            while (offset < audioData.size) {
-                                val chunkSize = minOf(maxChunkSize, audioData.size - offset)
-                                val chunk = audioData.copyOfRange(offset, offset + chunkSize)
+                            while (offset < processedData.size) {
+                                val chunkSize = minOf(maxChunkSize, processedData.size - offset)
+                                val chunk = processedData.copyOfRange(offset, offset + chunkSize)
                                 callback.audioAvailable(chunk, 0, chunk.size)
                                 offset += chunkSize
                             }

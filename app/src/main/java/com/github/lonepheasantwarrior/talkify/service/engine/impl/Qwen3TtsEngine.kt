@@ -527,6 +527,8 @@ class Qwen3TtsEngine : AbstractTtsEngine() {
         return Qwen3TtsConfig()
     }
 
+    override fun supportsNativeSpeechRate(): Boolean = false
+
     override fun getConfigLabel(configKey: String, context: android.content.Context): String? {
         return when (configKey) {
             "api_key" -> context.getString(R.string.api_key_label)

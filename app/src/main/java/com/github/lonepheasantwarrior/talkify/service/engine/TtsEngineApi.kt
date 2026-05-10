@@ -124,6 +124,13 @@ interface TtsEngineApi {
     fun createDefaultConfig(): BaseEngineConfig
 
     /**
+     * 引擎是否原生支持语速调节
+     *
+     * @return true 表示引擎 API 本身支持语速参数，false 需要由系统层做 PCM 时间拉伸
+     */
+    fun supportsNativeSpeechRate(): Boolean = true
+
+    /**
      * 获取配置项标签
      *
      * 用于 UI 层显示配置项的本地化标签
