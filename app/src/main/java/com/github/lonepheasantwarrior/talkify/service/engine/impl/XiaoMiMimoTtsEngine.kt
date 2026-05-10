@@ -49,7 +49,7 @@ class XiaoMiMimoTtsEngine : AbstractTtsEngine() {
         const val ENGINE_NAME = "小米MiMo语音合成"
         private const val VOICE_NAME_SEPARATOR = "::"
         private const val API_URL = "https://api.xiaomimimo.com/v1/chat/completions"
-        private const val MODEL_NAME = "mimo-v2-tts"
+        private const val MODEL_NAME = "mimo-v2.5-tts"
 
         // 文本分块配置
         private const val MAX_TEXT_LENGTH = 300
@@ -691,6 +691,8 @@ class XiaoMiMimoTtsEngine : AbstractTtsEngine() {
     override fun createDefaultConfig(): BaseEngineConfig {
         return XiaoMiMimoConfig()
     }
+
+    override fun supportsNativeSpeechRate(): Boolean = false
 
     override fun getConfigLabel(configKey: String, context: android.content.Context): String? {
         return when (configKey) {
