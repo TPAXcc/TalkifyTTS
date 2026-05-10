@@ -56,16 +56,15 @@ class PcmTimeStretcher(private val speedRatio: Float) {
         }
 
         val analysisHop = (HOP_SIZE * effectiveSpeed).roundToInt().coerceAtLeast(1)
-        val useWsola = analysisHop <= FRAME_SIZE
         val estimatedOutput = (inputBuffer.size * 2 / analysisHop + 2) * HOP_SIZE
         val output = ByteArray(estimatedOutput * 2)
         var outIdx = 0
 
         while (inputPos + FRAME_SIZE <= inputBuffer.size) {
-            val bestOffset = if (useWsola && prevFrameRaw.isNotEmpty()) {
-                findBestOffset(inputBuffer, inputPos, prevFrameRaw)
-            } else {
+            val bestOffset = if (prevFrameRaw.isEmpty()) {
                 0
+            } else {
+                findBestOffset(inputBuffer, inputPos, prevFrameRaw)
             }
 
             val frameStart = (inputPos + bestOffset).coerceAtLeast(0)
@@ -84,7 +83,7 @@ class PcmTimeStretcher(private val speedRatio: Float) {
             writePos += HOP_SIZE
             inputPos += analysisHop
 
-            while (readPos < writePos) {
+            while (readPos + HOP_SIZE <= writePos) {
                 val idx = (readPos % ACCUM_SIZE.toLong()).toInt()
                 val value = accumBuffer[idx]
                 accumBuffer[idx] = 0f
