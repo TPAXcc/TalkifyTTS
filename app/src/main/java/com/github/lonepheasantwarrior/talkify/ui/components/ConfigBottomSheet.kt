@@ -293,6 +293,20 @@ private fun buildConfigItems(
                     )
                 )
             }
+            val modelLabel = getLabel("model_name")
+            if (modelLabel != null) {
+                items.add(
+                    ConfigItem(
+                        key = "model_name",
+                        label = modelLabel,
+                        value = config.modelName,
+                        dropdownOptions = listOf(
+                            "mimo-v2.5-tts" to "mimo-v2.5-tts",
+                            "mimo-v2-tts" to "mimo-v2-tts"
+                        )
+                    )
+                )
+            }
         }
         is MiniMaxTtsConfig -> {
             val label = getLabel("api_key")
@@ -363,9 +377,11 @@ private fun buildConfigFromItems(
         }
         is XiaoMiMimoConfig -> {
             val apiKey = items.find { it.key == "api_key" }?.value ?: ""
+            val modelName = items.find { it.key == "model_name" }?.value ?: "mimo-v2.5-tts"
             XiaoMiMimoConfig(
                 apiKey = apiKey,
-                voiceId = voiceId
+                voiceId = voiceId,
+                modelName = modelName
             )
         }
         is MiniMaxTtsConfig -> {

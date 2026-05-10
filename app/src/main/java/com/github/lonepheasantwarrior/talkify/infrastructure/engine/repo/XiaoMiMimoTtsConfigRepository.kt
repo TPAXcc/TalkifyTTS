@@ -23,7 +23,8 @@ class XiaoMiMimoTtsConfigRepository(
         val prefsKey = getPrefsKey(engineId)
         return XiaoMiMimoConfig(
             apiKey = sharedPreferences.getString("${prefsKey}_$KEY_API_KEY", "") ?: "",
-            voiceId = sharedPreferences.getString("${prefsKey}_$KEY_VOICE_ID", "") ?: ""
+            voiceId = sharedPreferences.getString("${prefsKey}_$KEY_VOICE_ID", "") ?: "",
+            modelName = sharedPreferences.getString("${prefsKey}_$KEY_MODEL_NAME", "mimo-v2.5-tts") ?: "mimo-v2.5-tts"
         )
     }
 
@@ -33,6 +34,7 @@ class XiaoMiMimoTtsConfigRepository(
         sharedPreferences.edit()
             .putString("${prefsKey}_$KEY_API_KEY", mimoConfig.apiKey)
             .putString("${prefsKey}_$KEY_VOICE_ID", mimoConfig.voiceId)
+            .putString("${prefsKey}_$KEY_MODEL_NAME", mimoConfig.modelName)
             .apply()
     }
 
@@ -50,5 +52,6 @@ class XiaoMiMimoTtsConfigRepository(
         private const val PREFS_NAME = "talkify_engine_configs"
         private const val KEY_API_KEY = "api_key"
         private const val KEY_VOICE_ID = "voice_id"
+        private const val KEY_MODEL_NAME = "model_name"
     }
 }

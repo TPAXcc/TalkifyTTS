@@ -157,6 +157,41 @@ private fun ConfigItemEditor(
                 }
             }
         }
+    } else if (item.dropdownOptions.isNotEmpty()) {
+        var expanded by remember { mutableStateOf(false) }
+        val selectedLabel = item.dropdownOptions.find { it.first == item.value }?.second ?: item.value
+
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = it },
+            modifier = modifier
+        ) {
+            OutlinedTextField(
+                value = selectedLabel,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text(item.label) },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+            )
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                item.dropdownOptions.forEach { (value, label) ->
+                    DropdownMenuItem(
+                        text = { Text(label) },
+                        onClick = {
+                            onValueChange(value)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
     } else {
         OutlinedTextField(
             value = item.value,

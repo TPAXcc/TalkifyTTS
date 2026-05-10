@@ -49,7 +49,6 @@ class XiaoMiMimoTtsEngine : AbstractTtsEngine() {
         const val ENGINE_NAME = "小米MiMo语音合成"
         private const val VOICE_NAME_SEPARATOR = "::"
         private const val API_URL = "https://api.xiaomimimo.com/v1/chat/completions"
-        private const val MODEL_NAME = "mimo-v2.5-tts"
 
         // 文本分块配置
         private const val MAX_TEXT_LENGTH = 300
@@ -430,7 +429,7 @@ class XiaoMiMimoTtsEngine : AbstractTtsEngine() {
 
         // 构建请求体 - OpenAI Chat Completions 格式
         val requestBody = JSONObject().apply {
-            put("model", MODEL_NAME)
+            put("model", config.modelName)
             put("messages", org.json.JSONArray().put(
                 JSONObject().apply {
                     put("role", "assistant")
@@ -698,6 +697,7 @@ class XiaoMiMimoTtsEngine : AbstractTtsEngine() {
         return when (configKey) {
             "api_key" -> context.getString(R.string.api_key_label)
             "voice_id" -> context.getString(R.string.voice_select_label)
+            "model_name" -> context.getString(R.string.model_name_label)
             else -> null
         }
     }

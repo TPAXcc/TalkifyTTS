@@ -12,5 +12,6 @@ package com.github.lonepheasantwarrior.talkify.domain.model
  */
 data class XiaoMiMimoConfig(
     override val voiceId: String = "",
-    val apiKey: String = ""
+    val apiKey: String = "",
+    val modelName: String = "mimo-v2.5-tts"
 ) : BaseEngineConfig(voiceId)
